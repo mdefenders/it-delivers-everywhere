@@ -1,0 +1,24 @@
+name: Feature Branch CI
+
+on:
+  workflow_dispatch:
+  create:
+    branches:
+      - 'feature/*'
+  push:
+    branches:
+      - 'feature/*'
+    paths-ignore:
+      - 'deploy/**'
+      - '**/*.md'
+      - 'versions.json'
+      - 'doc/**'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  call-ci:
+    name: Call Feature-CI Workflow
+    uses: mdefenders/shared-workflows/.github/workflows/feature-ci.yaml@dev
+    secrets: inherit
