@@ -1,4 +1,4 @@
-name: Promote Preprod to Prod
+name: Create FB
 
 on:
   workflow_dispatch:
