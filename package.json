@@ -1,0 +1,27 @@
+{
+  "name": "it-delivers-everywhere",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test:unit",
+    "test:unit": "jest --config=tests/configs/jest.unit.config.js",
+    "test:integration": "jest --config=tests/configs/jest.integration.config.js",
+    "test:smoke": "jest --config=tests/configs/jest.smoke.config.js",
+    "test:endtoend": "jest --config=tests/configs/jest.endtoend.config.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "eslint": "^9.31.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.3.0",
+    "jest": "^30.0.4",
+    "supertest": "^7.1.3"
+  }
+}

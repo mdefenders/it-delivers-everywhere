@@ -1,0 +1,12 @@
+name: Promote Preprod to Prod
+
+on:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  call-cd:
+    name: Create FB Workflow
+    uses: mdefenders/shared-workflows/.github/workflows/create-fb.yaml@dev

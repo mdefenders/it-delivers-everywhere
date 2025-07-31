@@ -7,7 +7,7 @@ Feel free to reach out to the team and share your ideas for improvements.
 
 The flow is based on [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) + Pull
 Request principles, using GitHub Actions for CI and a GitOps tool (e.g., ArgoCD, FluxCD) for CD.  
-In most cases, your only interface will be the [GitHub UI](https://github.com/mdefenders/it-works-on-my-machine/).
+In most cases, your only interface will be the [GitHub UI](https://github.com/mdefenders/it-delivers-everywhere/).
 
 GitHub Actions workflow files are located in the `.github/workflows` directory. Each file defines an environment- or
 branch-specific pipeline that combines a tailored set of reusable workflows.
@@ -38,7 +38,7 @@ into it and push.
 > - Final end-to-end testing is performed
 
 **Trigger production deployment** by manually running
-the [GitHub Action workflow](https://github.com/mdefenders/it-works-on-my-machine/actions/workflows/prod-cd.yaml) on the
+the [GitHub Action workflow](https://github.com/mdefenders/it-delivers-everywhere/actions/workflows/prod-cd.yaml) on the
 **`main`** branch.
 > The service is deployed to the `production` environment using the GitOps tool (e.g., ArgoCD, FluxCD). Smoke tests
 > validate that the service is running and responsive.  
@@ -82,7 +82,7 @@ The report includes:
 - Direct links to build errors (if any)
 - A direct link to the deployed service
 
-[Example](https://github.com/mdefenders/it-works-on-my-machine/actions/runs/16481323482) of the workflow run report
+[Example](https://github.com/mdefenders/it-delivers-everywhere/actions/runs/16481323482) of the workflow run report
 > Only collaborators with write access (or higher) can view them in the GitHub UI.
 
 ![img.png](doc/images/img.png)
@@ -477,19 +477,19 @@ You can test the deployment locally by following these steps:
     - For other systems: [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/)
 
 ```bash
-helm upgrade --install it-works-on-my-machine  ./deploy/charts/app -f ./deploy/environments/dev/values.yaml
+helm upgrade --install it-delivers-everywhere  ./deploy/charts/app -f ./deploy/environments/dev/values.yaml
 
 kubectl get pods
 NAME                                     READY   STATUS    RESTARTS   AGE
-it-works-on-my-machine-fcbcb5b88-8l6nt   1/1     Running   0          51m
-it-works-on-my-machine-fcbcb5b88-g75ph   1/1     Running   0          51m
-it-works-on-my-machine-fcbcb5b88-tcx29   1/1     Running   0          51m
+it-delivers-everywhere-fcbcb5b88-8l6nt   1/1     Running   0          51m
+it-delivers-everywhere-fcbcb5b88-g75ph   1/1     Running   0          51m
+it-delivers-everywhere-fcbcb5b88-tcx29   1/1     Running   0          51m
 ```
 
 - Use `kubectl port-forward` to access the service locally:
 
 ```bash
-kubectl port-forward it-works-on-my-machine-fcbcb5b88-8l6nt 3000:3000
+kubectl port-forward it-delivers-everywhere-fcbcb5b88-8l6nt 3000:3000
 curl -ks localhost:3000/health | jq
 {
   "status": "ok",
@@ -504,15 +504,15 @@ curl -ks localhost:3000/health | jq
 ```bash
 get pods -l tag=develop-990914200
 NAME                                      READY   STATUS    RESTARTS   AGE
-it-works-on-my-machine-68dcd5bd4d-5d5fp   1/1     Running   0          24m
-it-works-on-my-machine-68dcd5bd4d-q2bmf   1/1     Running   0          24m
-it-works-on-my-machine-68dcd5bd4d-tp6cz   1/1     Running   0          25m
+it-delivers-everywhere-68dcd5bd4d-5d5fp   1/1     Running   0          24m
+it-delivers-everywhere-68dcd5bd4d-q2bmf   1/1     Running   0          24m
+it-delivers-everywhere-68dcd5bd4d-tp6cz   1/1     Running   0          25m
 
 kubectl get pods --show-labels
 NAME                                      READY   STATUS    RESTARTS   AGE   LABELS
-it-works-on-my-machine-68dcd5bd4d-5d5fp   1/1     Running   0          25m   app=it-works-on-my-machine,pod-template-hash=68dcd5bd4d,tag=develop-9909142
-it-works-on-my-machine-68dcd5bd4d-q2bmf   1/1     Running   0          25m   app=it-works-on-my-machine,pod-template-hash=68dcd5bd4d,tag=develop-9909142
-it-works-on-my-machine-68dcd5bd4d-tp6cz   1/1     Running   0          25m   app=it-works-on-my-machine,pod-template-hash=68dcd5bd4d,tag=develop-9909142 
+it-delivers-everywhere-68dcd5bd4d-5d5fp   1/1     Running   0          25m   app=it-delivers-everywhere,pod-template-hash=68dcd5bd4d,tag=develop-9909142
+it-delivers-everywhere-68dcd5bd4d-q2bmf   1/1     Running   0          25m   app=it-delivers-everywhere,pod-template-hash=68dcd5bd4d,tag=develop-9909142
+it-delivers-everywhere-68dcd5bd4d-tp6cz   1/1     Running   0          25m   app=it-delivers-everywhere,pod-template-hash=68dcd5bd4d,tag=develop-9909142 
 ```
 
 ## Design Flaws and Required Refactoring

@@ -1,0 +1,13 @@
+node_modules
+.npmrc
+.npm
+.git
+.DS_Store
+.dockerignore
+.gitignore
+Dockerfile
+README.md
+coverage
+doc
+secrets
+metrics
