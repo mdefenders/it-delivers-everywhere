@@ -439,11 +439,11 @@ The testing strategy is based on the following principles:
 ## GitHub Organization/Repo configuration
 > **IMPORTANT:** Create your orgs repos with DockerHub K8S safe names as:
 >- direct name mapping used
->- no automatic name conversion so far
+>- no automatic name conversion until transition from Bash to GitHub Actions TypeScript
 
 Set develop branch as the default branch
 Workflows configured to use standard GitHub Hosted Runners
-Configure following secrets and variables on Organization or repository level:
+ Configure the following secrets and variables on Organization or repository level:
 
 ### Secrets
 
