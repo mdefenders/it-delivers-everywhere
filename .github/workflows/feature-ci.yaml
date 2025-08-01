@@ -2,6 +2,10 @@ name: Feature Branch CI
 
 on:
   workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - main
   create:
     branches:
       - 'feature/*'
