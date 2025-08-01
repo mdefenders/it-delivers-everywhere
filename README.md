@@ -3,14 +3,25 @@
 The CI/CD has been developed with the goal of making your work easier and more productive.  
 Feel free to reach out to the team and share your ideas for improvements.
 
+This is v2 release candidate, created as an improved and simplified version of
+[Some testing assigment](https://github.com/mdefenders/it-delivers-everywhere/)
+
+**Key changes include:**
+
+- Moving from GitFlow to GitHub Flow
+- Parallel feature branch development with namespace isolation fully automated with ArgoCD ApplicationSets
+- Only three environments: `dev`, `staging`, and `production`
+- No manual release branch creation. Major, minor versions are controlled by the source code with CI auto-incrementing
+- Cost saving feature may be activated on `dev`, `staging` to descale deployments after tests are completed
+
 ## Overview
 
-The flow is based on [GitFlow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) + Pull
-Request principles, using GitHub Actions for CI and a GitOps tool (e.g., ArgoCD, FluxCD) for CD.  
+The flow is based on [GitHub Flow](https://docs.github.com/en/get-started/using-github/github-flow) and GitOps
+principles, using GitHub Actions for CI and ArgoCD for CD.  
 In most cases, your only interface will be the [GitHub UI](https://github.com/mdefenders/it-delivers-everywhere/).
 
-GitHub Actions workflow files are located in the `.github/workflows` directory. Each file defines an environment- or
-branch-specific pipeline that combines a tailored set of reusable workflows.
+GitHub Actions workflow files are located in the `.github/workflows` directory. Each file defines an
+environment-specific pipeline that combines a tailored set of reusable workflows.
 
 
 > **IMPORTANT:** All [reusable workflows](https://github.com/mdefenders/shared-workflows) are stored in a separate
@@ -19,37 +30,27 @@ branch-specific pipeline that combines a tailored set of reusable workflows.
 ## Promote Your Code from Feature Branch to Production
 
 **Create a feature branch** from `develop` (e.g., `feature/my-awesome-feature`), make your changes, commit, and push.
-> CI/CD will perform a dry run: code quality checks, unit tests, and a dry-run Docker build.
 
-**Create and merge a Pull Request (PR)** to the `develop` branch.
+OR
+**Create a Pull Request (PR)** to the `master` branch.
+
 > Code quality checks, unit tests, Docker image build and push to DockerHub, image security scan, deployment to the
 `dev` Kubernetes environment, regression and integration tests.  
 > You'll receive a deployment notification with links to the workflow run report and the deployed service URL.
 
-**Create a release branch** from `develop` (e.g., `release/1.2.3`) when you're ready to release. Merge `master` back
-into it and push.
-> Same steps as for the `develop` branch, but deployment targets the `staging` environment — allowing continued feature
-> development in `dev` while stabilizing and testing the release in `staging`.
-
-**Merge the release branch** into `main` and push.
-> Same steps as for the `release` branch, with additional production readiness steps:
-> - A versioned Docker image is built from the `main` branch commit
-> - The service is deployed to the `pre-production` environment, allowing SRE to evaluate and validate the release
-> - Final end-to-end testing is performed
+**Merge a Pull Request (PR)** to the `master` branch.
+> Code quality checks, unit tests, Docker image build and push to DockerHub, image security scan, deployment to the
+`staging` Kubernetes environment, Final end-to-end testing is performed.
+> You'll receive a deployment notification with links to the workflow run report and the deployed service URL.
 
 **Trigger production deployment** by manually running
 the [GitHub Action workflow](https://github.com/mdefenders/it-delivers-everywhere/actions/workflows/prod-cd.yaml) on the
 **`main`** branch.
-> The service is deployed to the `production` environment using the GitOps tool (e.g., ArgoCD, FluxCD). Smoke tests
+> The service is deployed to the `production` environment using the ArgoCD. Smoke tests
 > validate that the service is running and responsive.  
 > A release tag is added to the repository.  
 > If smoke tests fail, the deployment is automatically rolled back by restoring the previous image tag in the GitOps
 > repository.
-
-**Hotfixes** (e.g., `hotfix/1.2.4`) are handled similarly to releases, but are created from the `master` branch for
-urgent fixes.
-> Bump the patch version manually when creating the hotfix branch.  
-> After merging the hotfix, also merge it back to `develop` to ensure the fix is included in future releases.
 
 ## Add Tests
 
@@ -63,8 +64,8 @@ At the moment, only the current service's URL is available through the `$SERVICE
 | Folder        | Triggered At Stage |
 |---------------|--------------------|
 | `unit`        | All stages         |
-| `integration` | Dev, Staging       |
-| `endtoend`    | Preproduction      |
+| `integration` | Dev                |
+| `endtoend`    | Staging            |
 | `smoke`       | Production         |
 
 ## Workflow Run Report
@@ -78,11 +79,11 @@ The report includes:
 - Test results
 - A link to the built Docker image in DockerHub
 - Image vulnerability scan report (**folded by default** to reduce noise)
-- GitOps deployment manifest changes with commit references
+- GitOps deployment manifests changes with commit references
 - Direct links to build errors (if any)
 - A direct link to the deployed service
 
-[Example](https://github.com/mdefenders/it-delivers-everywhere/actions/runs/16481323482) of the workflow run report
+[Example](https://github.com/mdefenders/it-delivers-everywhere/actions/runs/16678359527) of the workflow run report
 > Only collaborators with write access (or higher) can view them in the GitHub UI.
 
 ![img.png](doc/images/img.png)
@@ -105,7 +106,7 @@ The report includes:
 ## Monitoring & Observability
 
 A high-level overview of pipeline runs and deployments is available through
-the [Grafana Cloud Dashboard](https://aditor.grafana.net/public-dashboards/4707a3e0a24841b69ba59eba59a2f5be/) (free
+the [Grafana Cloud Dashboard](https://aditor.grafana.net/public-dashboards/aaa5de30a41e40a7a0a2400d7c40f8f1/) (free
 tier).
 
 Only essential metrics are collected to provide quick insights into:
@@ -134,12 +135,6 @@ The following features, while important in real-world scenarios, were intentiona
 time-saving reasons.  
 However, the current design allows for their implementation in the future if needed:
 
-- **Simultaneous feature branch deployments** in the development environment and **multiple release versions** deployed
-  to staging or production. These scenarios require a service mesh or complex deployment strategies, which are beyond
-  the scope of this assignment.
-- **Simplified feature branch switching** in `dev` via external scripts was considered, but not implemented.  
-  While this could allow developers to switch between branches more easily, it would break the **zero-click** automation
-  goal.
 - **Blue/Green or Canary deployments.**  
   Standard Kubernetes rollout strategies are sufficient for this service's reliability needs.
 - **Kubernetes infrastructure provisioning as IaaC.**
@@ -150,8 +145,7 @@ However, the current design allows for their implementation in the future if nee
 - **Job failures** Security vulnerabilities haven't been fixed to demonstrate job reporting and failures handling.
 - **on_create** triggers intentionally not implemented because of the service behavior.
 
-> In a real word scenario a
-> wrapper action may be created to route on create calls proper way.
+> In a real word scenario, a wrapper action may be created to route on create calls proper way.
 
 - **Reusable workflows** with embedded Bash scripts were used for logic isolation and reuse due to:
 
@@ -179,8 +173,8 @@ reliability, and observability.
 - **Deployed using Helm** (a basic chart is included locally for demo purposes)
 - **GitOps-driven** rollout (compatible with tools like ArgoCD or FluxCD)
 
-Although the Helm chart is included in this repository for demonstration purposes, in production we recommend using a
-centralized Helm chart registry to ensure consistency and reusability.
+Although the Helm chart, ArgoCD ApplicationSets and Applications are included in this repository for demonstration
+purposes, in production we recommend using a centralized Helm chart registry to ensure consistency and reusability.
 
 > The included Helm chart is intentionally minimal and serves to demonstrate CD-related functionality only.  
 > It creates a Kubernetes Deployment with liveness/readiness probes, but omits Ingress and Service resources, which are
@@ -194,27 +188,24 @@ The service follows a GitFlow based promotion model:
     +-------------+        Push        +------------------+
     | Developer   |------------------->|  feature/*       |
     +-------------+                    +------------------+
-                                           | CI only
                                            | Unit tests 
-                                           v Build dry-run
-     Merge PR into                     +------------------+
-     develop                           |   develop        |
-                                       +------------------+
-                                           | Build/push
+                                           | Build/push                                           
                                            | Dev deploy
                                            v Regression/Integration
                                              tests
-     Release branch created            +------------------+
-     from develop                      |  release/x.y.z   |
-                                       +------------------+
-                                           | Build/push
-                                           | Staging deploy
-                                           v Integration tests
+     Open PR into                     +------------------+
+     main                             |      main        |
+                                      +------------------+
+                                           | Unit tests 
+                                           | Build/push                                           
+                                           | Dev deploy
+                                           v Regression/Integration
+                                             tests
      Merge PR into                     +------------------+
      main                              |      main        |
                                        +------------------+
                                            | Build/push
-                                           | Pre-Production deploy
+                                           | Staging deploy
                                            v End-to-End tests
      Prod depoy trigger                +------------------+
                                        |      main        |
@@ -228,19 +219,6 @@ The service follows a GitFlow based promotion model:
 
 This flow should be secured with branch protection rules to prevent direct pushes to develop, release/*, and main —
 allowing only changes made through Pull Requests or by the GitHub Actions user.
-
-Key steps:
-
-- Developers create feature/* branches, which trigger CI: code checks, unit tests, and a dry-run build.
-- Once a feature is ready, it is merged into develop, triggering deployment to the development environment for
-  regression and integration testing.
-- A new release branch (release/x.y.z) is created from develop for staging-level QA.
-- After QA approval, the release is merged into main, tagged (e.g., v1.2.3), and deployed to the pre-production
-  environment with full end-to-end tests.
-- Production deployment is manually triggered from a workflow run, initiating the GitOps pipeline to update the cluster
-  and run smoke tests.
-- Hotfixes follow a similar pattern: hotfix/* → main, with optional staging deployment for validation prior to
-  production.
 
 ## CI/CD Pipeline Logic
 
@@ -266,7 +244,9 @@ The CI pipeline, implemented with GitHub Actions, performs the following steps:
 The CD flow relies on GitOps principles:
 
 - Git is the **single source of truth** for deployment configuration
-- ArgoCD or FluxCD watches the GitOps repository and syncs the declared state with the cluster
+- ArgoCD watches the GitOps repository and syncs the declared state with the cluster
+- ApplicationSets used to automatically create ArgoCD Applications for each feature branch, ensuring that each service
+  has its own namespace and deployment configuration
 - Deployment is executed using native Kubernetes `Deployment` resources
 
 > Kubernetes handles delivery safely using native rollout strategies like rolling updates, readiness probes, and health
@@ -285,34 +265,29 @@ This project uses a **composite repository** (monolith-per-service), which inclu
 > **Why this structure?**  
 > A repository that combines both the service code and its GitOps configuration:
 > - Simplifies CI/CD pipelines by enabling build and deploy in a single pipeline run
-> - Avoids build queuing and merge conflicts in GitOps manifests during parallel service builds
+> - Avoid build queuing and merge conflicts in GitOps manifests during parallel service builds
 >
 > In real-world projects, either a **pure monorepo** or **split-repo** (multi-repo) structure may be more appropriate,
 > depending on team size, service scale, and system complexity.
 
 ### Branching Model
 
-The project follows the **GitFlow** model:
+The project follows the **GitHub Flow** model:
 
-- `feature/*` — Feature development (CI only)
-- `develop` — Integrated dev testing (CI + development deployment)
-- `release/*` — Pre-production QA (Staging deployment)
-- `hotfix/*` — Urgent fixes (Staging + Production deployment)
+- `feature/*` — Feature development
 - `main` — Production-ready releases (Production deployment)
-
-> **Why this model?**
-> - It aligns naturally with the chosen promotion flow
-> - It can be easily extended in the future to support multiple feature versions in development and multiple releases in
-    staging/production
 
 ## Versioning Strategy
 
 This project employs a hybrid versioning scheme that leverages Git commit identifiers and Semantic Versioning (SemVer),
 applied according to the deployment stage:
 
-- **Dev builds:** use short commit SHA1 tags (e.g., `dev-<sha>`)
-- **Release candidates and hotfixes:** use the branch name combined with short commit SHA1 (e.g. `1.2.3-rc-<sha>`)
-- **Releases:** follow SemVer tags (e.g., `1.2.3`)
+- **Dev builds:** use short commit SHA1 tags (e.g., `{.branch}-<sha>`) for feature pushes and `{.branch}-PR-<.prNumber>`
+  for PRs
+- **Releases:** follow Semantic Versioning (MAJOR.MINOR.PATCH) for all merges to master.
+  The major and minor versions are derived from the source code (`version.json`), while the patch version is
+  automatically incremented by the CI/CD pipeline based on commit metadata (e.g., type or labels). The resulting version
+  is written back to `version.json`in the repository.
 
 ### Build and Version Traceability
 
@@ -334,7 +309,7 @@ For production deployments, a `version tag` is added to the Git repository on th
 ## Code Quality Gates
 
 Code Quality Gates are enforced through GitHub Actions workflows, triggered on every push and checked on key branches
-and PRs (`develop`, `release/*`, `main`).
+and PRs.
 
 > For this testing assignment repository, **branch protection rules are intentionally NOT enabled** to allow
 > demonstration of possible failures and to simplify access configuration for action runners.  
@@ -392,7 +367,7 @@ COPY server.js .
 
 ### Dependencies
 
-Dependabot is enabled in the repository to keep dependencies up-to-date safely and automatically.
+Dependabot is enabled in the repository to keep dependencies up to date safely and automatically.
 
 ### Tests
 
@@ -403,7 +378,7 @@ A very basic unit test is included as a placeholder for all types of tests that 
 - Added basic HTTP health checks (`/health`) in the Kubernetes Deployment to verify the service is running and
   responsive
 - The `/health` endpoint returns the deployed build version and commit hash
-- Configured the Deployment with a **RollingUpdate** strategy to ensure safe, zero-downtime upgrades
+- The Deployment is configured with a **RollingUpdate** strategy to ensure safe, zero-downtime upgrades
 
 > **Security note:** If there are security concerns, access to the `/health` endpoint should be properly secured.
 
@@ -412,9 +387,8 @@ A very basic unit test is included as a placeholder for all types of tests that 
 The testing strategy is based on the following principles:
 
 - **Unit tests**: Run on every code push
-- **Regression / Integration tests**: Run after deploying `develop` builds to the development environment
-- **Integration tests**: Run after deploying `release` builds to the staging environment
-- **End-to-end tests**: Run after deploying `main` builds to the pre-production environment
+- **Regression / Integration tests**: Run after deploying `feature` builds to the development environment
+- **End-to-end tests**: Run after deploying `main` builds to the staging environment
 - **Smoke tests**: Run after production deployment to ensure the service is responsive — failure triggers an automatic
   rollback
 
@@ -437,13 +411,14 @@ The testing strategy is based on the following principles:
 > authenticated Kubernetes API calls for robust rollout verification.
 
 ## GitHub Organization/Repo configuration
+
 > **IMPORTANT:** Create your orgs repos with DockerHub K8S safe names as:
 >- direct name mapping used
 >- no automatic name conversion until transition from Bash to GitHub Actions TypeScript
 
 Set develop branch as the default branch
 Workflows configured to use standard GitHub Hosted Runners
- Configure the following secrets and variables on Organization or repository level:
+Configure the following secrets and variables on Organization or repository level:
 
 ### Secrets
 
@@ -466,6 +441,10 @@ Workflows configured to use standard GitHub Hosted Runners
 | PUSH_FB_IMAGE          | Push Docker image for feature branch builds to DockerHub         |       `false` |
 | TRIVY_VERSION          | Version of Trivy used for container image vulnerability scanning |               |
 | LOKI_PUSH_URL          | Grafana Cloud Loki push full URL                                 |               |
+| DEV_REPLICAS           | Development environment pods deployed after CI/CD run            |           `0` |
+| STAGING_REPLICAS       | Staging environment pods deployed after CI/CD run                |           `0` |
+| DEV_TEST_REPLICAS      | Development environment pods deployed for automated tests        |           `3` |
+| STAGING_TEST_REPLICAS  | Staging environment pods deployed for automated tests            |           `3` |
 
 ## Local Kubernetes Deployment
 
@@ -474,30 +453,47 @@ You can test the deployment locally by following these steps:
 - Install a local Kubernetes cluster
     - Enable Kubernetes in Docker Desktop
     - Or use Minikube: [https://minikube.sigs.k8s.io/](https://minikube.sigs.k8s.io/)
-
-- Install Helm
-    - On macOS: `brew install helm`
-    - For other systems: [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/)
+- [Install ArgoCD](https://argo-cd.readthedocs.io/en/stable/getting_started/)
+- Update the `deploy/arfocd/github-token` file with GitHub token
+- Update the `deploy/argicd/appset.yaml` file with your GitHub organization name
+- Deploy ArgoCD ApplicationSet and Application manifests:
 
 ```bash
-helm upgrade --install it-delivers-everywhere  ./deploy/charts/app -f ./deploy/environments/dev/values.yaml
+kubectl apply deploy/argocd/github-token.yaml
+kubectl apply -f deploy/argocd/appset.yaml
 
-kubectl get pods
-NAME                                     READY   STATUS    RESTARTS   AGE
-it-delivers-everywhere-fcbcb5b88-8l6nt   1/1     Running   0          51m
-it-delivers-everywhere-fcbcb5b88-g75ph   1/1     Running   0          51m
-it-delivers-everywhere-fcbcb5b88-tcx29   1/1     Running   0          51m
+kubectl get appsets
+NAME                              AGE
+it-delivers-everywhere-features   13h
+
+kubectl get apps
+NAME                                     SYNC STATUS   HEALTH STATUS
+it-delivers-everywhere-feature-ver-1.2   Synced        Healthy
+
+kubectl get ns
+NAME                                     STATUS   AGE
+argocd                                   Active   24h
+default                                  Active   10d
+dev                                      Active   23h
+it-delivers-everywhere-feature-ver-1-2   Active   3h11m
+kube-node-lease                          Active   10d
+kube-public                              Active   10d
+kube-system                              Active   10d
+
+kubectl get po -n it-delivers-everywhere-feature-ver-1-2
+NAME                                      READY   STATUS    RESTARTS   AGE
+it-delivers-everywhere-6dfccf6f76-tbjp6   1/1     Running   0          41m
 ```
 
 - Use `kubectl port-forward` to access the service locally:
 
 ```bash
-kubectl port-forward it-delivers-everywhere-fcbcb5b88-8l6nt 3000:3000
+kubectl port-forward it-delivers-everywhere-6dfccf6f76-tbjp6 3000:3000 -n it-delivers-everywhere-feature-ver-1-2
 curl -ks localhost:3000/health | jq
 {
   "status": "ok",
-  "version": "1.0.20",
-  "commit": "c242694"
+  "version": "SNAPSHOT",
+  "commit": "f954d61"
 }
 ```
 
@@ -505,17 +501,13 @@ curl -ks localhost:3000/health | jq
   specific container image version.
 
 ```bash
-get pods -l tag=develop-990914200
+kubectl get pods -ltag=VER-1.2-f954d61 -n it-delivers-everywhere-feature-ver-1-2
 NAME                                      READY   STATUS    RESTARTS   AGE
-it-delivers-everywhere-68dcd5bd4d-5d5fp   1/1     Running   0          24m
-it-delivers-everywhere-68dcd5bd4d-q2bmf   1/1     Running   0          24m
-it-delivers-everywhere-68dcd5bd4d-tp6cz   1/1     Running   0          25m
+it-delivers-everywhere-6dfccf6f76-tbjp6   1/1     Running   0          46m
 
-kubectl get pods --show-labels
+kubectl get pods --show-labels -n it-delivers-everywhere-feature-ver-1-2
 NAME                                      READY   STATUS    RESTARTS   AGE   LABELS
-it-delivers-everywhere-68dcd5bd4d-5d5fp   1/1     Running   0          25m   app=it-delivers-everywhere,pod-template-hash=68dcd5bd4d,tag=develop-9909142
-it-delivers-everywhere-68dcd5bd4d-q2bmf   1/1     Running   0          25m   app=it-delivers-everywhere,pod-template-hash=68dcd5bd4d,tag=develop-9909142
-it-delivers-everywhere-68dcd5bd4d-tp6cz   1/1     Running   0          25m   app=it-delivers-everywhere,pod-template-hash=68dcd5bd4d,tag=develop-9909142 
+it-delivers-everywhere-6dfccf6f76-tbjp6   1/1     Running   0          45m   app=it-delivers-everywhere,pod-template-hash=6dfccf6f76,tag=VER-1.2-f954d61
 ```
 
 ## Design Flaws and Required Refactoring
@@ -529,51 +521,11 @@ several issues:
 - Merges must be avoided during pipeline execution.
 - Release tags are applied to GitOps commits rather than merge commits, reducing traceability and making it harder to
   track actual code changes.
-- Back-merge of `main` to `develop` / `release` / `hotfix` is required to propagate GitOps manifest changes and enable
-  PRs from `release` to `main`.
+- PR builds: add a GitOps deployment commit that skips GitHub Actions workflow checks and prevents automatic mapping to
+  PR status checks.
 
 > **Real-world recommendation:** Split GitOps and service code into separate repositories for better separation of
 > concerns and cleaner workflows.
-
-### GitFlow
-
-Using pure GitFlow becomes problematic when combined with GitHub Branch Protection Rules and pull request enforcement:
-
-- Redundant build/deploy cycles are introduced to rebuild artifacts when merging `release` into `main`.
-- Since GitFlow relies on both `main` and `develop` branches, additional CI/CD configuration is needed to handle pull
-  requests from non-default branches.
-
-> **Real-world recommendation:** Consider adopting a more streamlined workflow that avoids merging release branches into
-> main—for example, using main as the development branch. Alternatively, adopt trunk-based development, where all
-> changes
-> are integrated into a single branch and releases are tagged directly from it. The optimal approach depends on the
-> preferences of the tech leadership and the size and maturity of the development team.
-
-### SHA1 Tags for Dev Builds
-
-SHA1 tags for development builds can be difficult to manage in GitHub pull requests because PRs don’t always generate
-persistent commits.
-
-> **Real-world recommendation:** Use SemVer tags for all builds, including development, add SHA1 as additional tags or
-> metadata, to improve traceability and consistency.
-
-### Separate Workflow File per Branch/Promotion Step
-
-Maintaining separate workflow files for branches like `feature`, `develop`, `preprod`, `release`, and `hotfix` may
-initially seem redundant. Technically, they could be unified into a single workflow using conditional logic for each
-promotion stage.
-
-However, this split offers several advantages:
-
-- Clearer separation of concerns
-- Safer and more focused updates
-- Easier debugging and testing of individual stages
-
-The trade-off is increased file duplication and slightly more complexity.
-
-> **Real-world recommendation:** For larger teams or production-grade systems, prefer well-structured,
-> environment-scoped workflows unless pipeline maintenance becomes a burden. Consider consolidation only when logic
-> becomes hard to maintain across many files.
 
 ### Monitoring and Observability
 
@@ -588,10 +540,8 @@ and properly addressed in real time.
 
 This project presents a practical example of a modern CI/CD pipeline tailored for microservices, featuring:
 
-- GitHub Actions for continuous integration seamlessly integrated with GitOps-driven continuous deployment using tools
-  like ArgoCD or FluxCD.
-- A realistic branching and promotion strategy inspired by GitFlow, balancing development agility and production
-  stability.
+- GitHub Actions for continuous integration seamlessly integrated with GitOps-driven continuous deployment using ArgoCD.
+- A realistic branching and promotion strategy inspired by GitHub Flow, focusing on development agility.
 - A clear and consistent versioning scheme combining Git commit hashes and Semantic Versioning to ensure traceability
   across all environments.
 - Kubernetes-native deployment patterns leveraging rolling updates, readiness and liveness probes, and automated
@@ -605,20 +555,15 @@ offering a solid foundation for building robust and automated delivery pipelines
 
 ## After-party Backlog
 
-## After-party Backlog
-
 - [X] Create Grafana dashboards for monitoring and alerting
 - [ ] Replace Bash scripts in the pipeline with custom or community-supported GitHub Actions for better maintainability
 - [ ] Integrate the K8S service into the Helm chart to simplify local testing and deployment
 - [ ] Replace hardcoded values with GitHub Actions variables for improved flexibility
 - [ ] Enable branch protection rules on key branches and configure GitHub Actions with the necessary permissions to push
   to protected branches
-- [ ] Add manual triggers for staging and pre-production end-to-end test executions
+- [ ] Add manual triggers for staging end-to-end test executions
 - [ ] Automate updating the service version in `package.json` during release branch creation
 - [ ] Add DependaBot PR to FeatureBranch Workflow filters
-- [ ] Add cost saving undeploy on success and undeploy on failure options
-- [ ] Add workflow to automate release branch creation
-- [ ] Move from GitFlow to Branch-per-release or Trunk-based development# it-delivers-everywhere
+- [X] Add cost saving undeploy on success and undeploy on failure options
+- [X] Move from GitFlow to Branch-per-release or Trunk-based development# it-delivers-everywhere
 - [ ] Add safe name conversions from GitHub org/repo names to Docker image names nad K8S namespaces
-# it-delivers-everywhere
-# it-delivers-everywhere

@@ -6,9 +6,6 @@ on:
     types: [opened, synchronize, reopened]
     branches:
       - main
-  create:
-    branches:
-      - 'feature/*'
   push:
     branches:
       - 'feature/*'
