@@ -35,7 +35,7 @@ spec:
             - ../../environments/dev/values.yaml
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{ .repository }}-{{ .branchNormalized }}'
+        namespace: '{{ .repository }}-{{ regexReplaceAll "[^a-z0-9-]" (lower .branchNormalized) "-" }}'
       syncPolicy:
         automated:
           prune: true
