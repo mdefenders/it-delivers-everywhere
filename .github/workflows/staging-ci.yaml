@@ -1,4 +1,4 @@
-name: Stagng  CI
+name: Staging  CI
 
 on:
   workflow_dispatch:
