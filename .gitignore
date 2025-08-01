@@ -3,3 +3,4 @@ node_modules
 coverage
 secrets
 metrics
+**/github-token.yaml

@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: it-delivers-everywhere-features
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - scmProvider:
+        cloneProtocol: https
+        filters:
+          - branchMatch: "^feature/.*$"
+            pathsExist:
+              - "deploy/charts/app"
+        github:
+          organization: mdefenders
+          allBranches: true
+          tokenRef:
+            secretName: github-token
+            key: token
+
+  template:
+    metadata:
+      name: '{{ .repository }}-{{ .branchNormalized }}'
+    spec:
+      project: default
+      source:
+        repoURL: '{{ .url }}'
+        targetRevision: '{{ .branch }}'
+        path: deploy/charts/app
+        helm:
+          valueFiles:
+            - ../../environments/dev/values.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ .repository }}-{{ .branchNormalized }}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

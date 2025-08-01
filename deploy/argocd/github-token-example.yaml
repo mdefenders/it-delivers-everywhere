@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: github-token
+  namespace: argocd
+type: Opaque
+data:
+  token: YOUR_BASE64_ENCODED_GITHUB_TOKEN
