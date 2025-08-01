@@ -437,6 +437,9 @@ The testing strategy is based on the following principles:
 > authenticated Kubernetes API calls for robust rollout verification.
 
 ## GitHub Organization/Repo configuration
+> **IMPORTANT:** Create your orgs repos with DockerHub K8S safe names as:
+>- direct name mapping used
+>- no automatic name conversion so far
 
 Set develop branch as the default branch
 Workflows configured to use standard GitHub Hosted Runners
@@ -616,5 +619,6 @@ offering a solid foundation for building robust and automated delivery pipelines
 - [ ] Add cost saving undeploy on success and undeploy on failure options
 - [ ] Add workflow to automate release branch creation
 - [ ] Move from GitFlow to Branch-per-release or Trunk-based development# it-delivers-everywhere
+- [ ] Add safe name conversions from GitHub org/repo names to Docker image names nad K8S namespaces
 # it-delivers-everywhere
 # it-delivers-everywhere

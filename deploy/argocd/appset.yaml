@@ -13,6 +13,7 @@ spec:
           - branchMatch: "^feature/.*$"
             pathsExist:
               - "deploy/charts/app"
+              - "deploy/environments/dev/values.yaml"
         github:
           organization: mdefenders
           allBranches: true
