@@ -1,0 +1,21 @@
+name: Stagng  CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - 'deploy/**'
+      - '**/*.md'
+      - 'versions.json'
+      - 'doc/**'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  call-ci:
+    name: Call Staging-CI Workflow
+    uses: mdefenders/shared-workflows/.github/workflows/staging-ci.yaml@dev
+    secrets: inherit
