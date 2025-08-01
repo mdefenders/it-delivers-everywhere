@@ -1,0 +1,13 @@
+name: Promote Preprod to Prod
+
+on:
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  call-cd:
+    name: Promote Preprod Workflow
+    uses: mdefenders/shared-workflows/.github/workflows/prod-cd.yaml@dev
+    secrets: inherit
