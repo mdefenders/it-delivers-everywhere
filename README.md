@@ -11,7 +11,7 @@ This is v2 release candidate, created as an improved and simplified version of
 - Moving from GitFlow to GitHub Flow
 - Parallel feature branch development with namespace isolation fully automated with ArgoCD ApplicationSets
 - Only three environments: `dev`, `staging`, and `production`
-- No manual release branch creation. Magor, minor versions are controlled by the source code with CI auto-incrementing
+- No manual release branch creation. Major, minor versions are controlled by the source code with CI auto-incrementing
 - Cost saving feature may be activated on `dev`, `staging` to descale deployments after tests are completed
 
 ## Overview
