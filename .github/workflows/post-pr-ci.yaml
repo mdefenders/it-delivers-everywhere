@@ -1,6 +1,7 @@
 name: Post-PR CI
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'feature/*'
