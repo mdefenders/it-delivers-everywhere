@@ -40,17 +40,22 @@ OR
 
 **Merge a Pull Request (PR)** to the `master` branch.
 > Code quality checks, unit tests, Docker image build and push to DockerHub, image security scan, deployment to the
-`staging` Kubernetes environment, Final end-to-end testing is performed.
+`staging` Kubernetes environment, Final end-to-end testing is performed. On tests success CD tags the repository with a
+> release version tag
 > You'll receive a deployment notification with links to the workflow run report and the deployed service URL.
 
 **Trigger production deployment** by manually running
-the [GitHub Action workflow](https://github.com/mdefenders/it-delivers-everywhere/actions/workflows/prod-cd.yaml) on the
-**`main`** branch.
-> The service is deployed to the `production` environment using the ArgoCD. Smoke tests
-> validate that the service is running and responsive.  
-> A release tag is added to the repository.  
-> If smoke tests fail, the deployment is automatically rolled back by restoring the previous image tag in the GitOps
-> repository.
+the [GitHub Actions workflow](https://github.com/mdefenders/it-delivers-everywhere/actions/workflows/prod-cd.yaml) on
+the `main` branch.
+
+> The service is deployed to the `production` environment using **ArgoCD**.  
+> During the pre-deployment step, the CD pipeline verifies:
+> - `version.json` contains a valid [Semantic Versioning](https://semver.org/) (SemVer) version
+> - The repository is tagged with this version, confirming successful end-to-end testing in staging
+> - The corresponding Docker image is available in **DockerHub**
+> - After deployment, **smoke tests** validate that the service is running and responsive.  
+> If the smoke tests fail, the deployment is automatically rolled back by restoring the previous image tag in the GitOps
+> manifest.
 
 ## Add Tests
 
@@ -556,7 +561,7 @@ offering a solid foundation for building robust and automated delivery pipelines
 ## After-party Backlog
 
 - [X] Create Grafana dashboards for monitoring and alerting
-- [ ] Add skip ci/cd commit message.
+- [ ] Add a skip ci/cd commit message.
 - [ ] Remove feature/* name convention.
 - [ ] Replace Bash scripts in the pipeline with custom or community-supported GitHub Actions for better maintainability
 - [ ] Integrate the K8S service into the Helm chart to simplify local testing and deployment
@@ -567,5 +572,5 @@ offering a solid foundation for building robust and automated delivery pipelines
 - [ ] Automate updating the service version in `package.json` during release branch creation
 - [ ] Add DependaBot PR to FeatureBranch Workflow filters
 - [X] Add cost saving undeploy on success and undeploy on failure options
-- [X] Move from GitFlow to Branch-per-release or Trunk-based development# it-delivers-everywhere
+- [X] Move from GitFlow to Branch-per-release or Trunk-based development
 - [ ] Add safe name conversions from GitHub org/repo names to Docker image names nad K8S namespaces
