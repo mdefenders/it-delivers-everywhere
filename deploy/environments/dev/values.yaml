@@ -1,4 +1,4 @@
 image: mdefenders/it-delivers-everywhere
-tag: test-tag-7190f77
+tag: test-tag-pr-25
 app: it-delivers-everywhere
-replicas: 1
+replicas: 3
