@@ -40,17 +40,22 @@ OR
 
 **Merge a Pull Request (PR)** to the `master` branch.
 > Code quality checks, unit tests, Docker image build and push to DockerHub, image security scan, deployment to the
-`staging` Kubernetes environment, Final end-to-end testing is performed.
+`staging` Kubernetes environment, Final end-to-end testing is performed. On tests success CD tags the repository with a
+> release version tag
 > You'll receive a deployment notification with links to the workflow run report and the deployed service URL.
 
 **Trigger production deployment** by manually running
-the [GitHub Action workflow](https://github.com/mdefenders/it-delivers-everywhere/actions/workflows/prod-cd.yaml) on the
-**`main`** branch.
-> The service is deployed to the `production` environment using the ArgoCD. Smoke tests
-> validate that the service is running and responsive.  
-> A release tag is added to the repository.  
-> If smoke tests fail, the deployment is automatically rolled back by restoring the previous image tag in the GitOps
-> repository.
+the [GitHub Actions workflow](https://github.com/mdefenders/it-delivers-everywhere/actions/workflows/prod-cd.yaml) on
+the `main` branch.
+
+> The service is deployed to the `production` environment using **ArgoCD**.  
+> During the pre-deployment step, the CD pipeline verifies:
+> - `version.json` contains a valid [Semantic Versioning](https://semver.org/) (SemVer) version
+> - The repository is tagged with this version, confirming successful end-to-end testing in staging
+> - The corresponding Docker image is available in **DockerHub**
+> - After deployment, **smoke tests** validate that the service is running and responsive.  
+> If the smoke tests fail, the deployment is automatically rolled back by restoring the previous image tag in the GitOps
+> manifest.
 
 ## Add Tests
 
