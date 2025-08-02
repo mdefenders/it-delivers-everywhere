@@ -1,0 +1,19 @@
+name: Post-PR CI
+
+on:
+  push:
+    branches:
+      - 'feature/*'
+    paths:
+      - 'deploy/environments/dev/values.yaml'
+    tags-ignore:
+      - '**'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  call-ci:
+    name: Post-PR Workflow
+    uses: mdefenders/shared-workflows/.github/workflows/post-pr-ci.yaml@dev
+    secrets: inherit
