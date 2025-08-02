@@ -556,7 +556,8 @@ offering a solid foundation for building robust and automated delivery pipelines
 ## After-party Backlog
 
 - [X] Create Grafana dashboards for monitoring and alerting
-- [ ] Remove feature/* name convention.]
+- [ ] Add skip ci/cd commit message.
+- [ ] Remove feature/* name convention.
 - [ ] Replace Bash scripts in the pipeline with custom or community-supported GitHub Actions for better maintainability
 - [ ] Integrate the K8S service into the Helm chart to simplify local testing and deployment
 - [ ] Replace hardcoded values with GitHub Actions variables for improved flexibility
