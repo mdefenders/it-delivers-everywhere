@@ -1,4 +1,4 @@
-name: Post-PR CI
+name: Post Deploy CI
 
 on:
   workflow_dispatch:
@@ -15,6 +15,6 @@ concurrency:
 
 jobs:
   call-ci:
-    name: Post-PR Workflow
-    uses: mdefenders/shared-workflows/.github/workflows/post-pr-ci.yaml@dev
+    name: Post Deploy CI
+    uses: mdefenders/shared-workflows/.github/workflows/post-deploy-ci.yaml@dev
     secrets: inherit
