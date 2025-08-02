@@ -561,7 +561,7 @@ offering a solid foundation for building robust and automated delivery pipelines
 ## After-party Backlog
 
 - [X] Create Grafana dashboards for monitoring and alerting
-- [ ] Add skip ci/cd commit message.
+- [ ] Add a skip ci/cd commit message.
 - [ ] Remove feature/* name convention.
 - [ ] Replace Bash scripts in the pipeline with custom or community-supported GitHub Actions for better maintainability
 - [ ] Integrate the K8S service into the Helm chart to simplify local testing and deployment
@@ -572,5 +572,5 @@ offering a solid foundation for building robust and automated delivery pipelines
 - [ ] Automate updating the service version in `package.json` during release branch creation
 - [ ] Add DependaBot PR to FeatureBranch Workflow filters
 - [X] Add cost saving undeploy on success and undeploy on failure options
-- [X] Move from GitFlow to Branch-per-release or Trunk-based development# it-delivers-everywhere
+- [X] Move from GitFlow to Branch-per-release or Trunk-based development
 - [ ] Add safe name conversions from GitHub org/repo names to Docker image names nad K8S namespaces
