@@ -1,6 +1,4 @@
 image: mdefenders/it-delivers-everywhere
-tag: action-test-66ae66d
+tag: gcp-test-8bfa53a
 app: it-delivers-everywhere
-replicas: 1
-ingress:
-  enabled: true
+replicas: 3
