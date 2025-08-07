@@ -3,9 +3,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Values.app }}
-  annotations:
-    kubernetes.io/ingress.class: nginx
 spec:
+  ingressClassName: nginx
   rules:
   - host: {{ .Values.app }}.{{ .Values.branch | default "default" }}.example.com
     http:
