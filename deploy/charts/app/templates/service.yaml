@@ -12,3 +12,4 @@ spec:
     - protocol: TCP
       port: {{ .Values.servicePort | default 80 }}
       targetPort: {{ .Values.port }}
+

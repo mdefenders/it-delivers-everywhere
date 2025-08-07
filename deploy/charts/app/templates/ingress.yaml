@@ -4,16 +4,17 @@ kind: Ingress
 metadata:
   name: {{ .Values.app }}
   annotations:
-    kubernetes.io/ingress.class: gce
+    kubernetes.io/ingress.class: nginx
 spec:
   rules:
-    - http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: {{ .Values.app }}
-                port:
-                  number: {{ .Values.servicePort | default 80 }}
+  - host: {{ .Values.app }}.{{ .Values.branch | default 'default' }}.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.app }}
+            port:
+              number: {{ .Values.servicePort | default 80 }}
 {{- end }}
