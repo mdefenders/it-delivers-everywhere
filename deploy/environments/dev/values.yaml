@@ -2,3 +2,5 @@ image: mdefenders/it-delivers-everywhere
 tag: action-test-66ae66d
 app: it-delivers-everywhere
 replicas: 1
+ingress:
+  enabled: false
