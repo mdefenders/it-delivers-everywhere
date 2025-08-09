@@ -4,7 +4,7 @@ The CI/CD has been developed with the goal of making your work easier and more p
 Feel free to reach out to the team and share your ideas for improvements.
 
 This is v2 release candidate, created as an improved and simplified version of
-[Some testing assigment](https://github.com/mdefenders/it-delivers-everywhere/)
+[Some testing assigment](https://github.com/mdefenders/it-works-on-my-machine/)
 
 **Key changes include:**
 
