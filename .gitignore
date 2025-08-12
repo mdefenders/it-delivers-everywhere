@@ -4,6 +4,6 @@ coverage
 secrets
 metrics
 **/github-token.yaml
-
+**/.DS_Store
 
 
