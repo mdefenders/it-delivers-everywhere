@@ -1,4 +1,4 @@
 image: mdefenders/it-delivers-everywhere
-tag: gcp-test-8bfa53a
+tag: gcp-test-cbb3dfe
 app: it-delivers-everywhere
-replicas: 1
+replicas: 3
