@@ -39,6 +39,7 @@ app.get('/', async (req, res) => {
       await axios.post(backendUrl, { ip: clientIp });
     } catch (err) {
       postError = err.message;
+      console.error('Error posting IP to backend:', err);
     }
     let ipLog = [];
     let getError = null;
@@ -47,6 +48,7 @@ app.get('/', async (req, res) => {
       ipLog = response.data.data || [];
     } catch (err) {
       getError = err.message;
+      console.error('Error fetching IP log from backend:', err);
     }
     let tableRows = ipLog.map(row => `<tr><td>${row.id}</td><td>${row.ip}</td><td>${row.timestamp}</td><td>${row.branch || ''}</td></tr>`).join('');
     let errorMsg = '';

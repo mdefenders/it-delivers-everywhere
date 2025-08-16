@@ -24,7 +24,7 @@ spec:
             - name: SERVICE_BRANCH
               value: {{ .Values.branch | default "default" | quote }}
             - name: SERVICE_NAME
-              value: {{ (printf "%s_BACK" .Values.app | upper) | quote }}
+              value: {{ .Values.app | replace "-" "_" | upper }}_BACK
           livenessProbe:
             httpGet:
               path: /health
