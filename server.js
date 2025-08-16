@@ -25,20 +25,6 @@ app.get('/health', (req, res) => {
 });
 app.get('/', async (req, res) => {
   if (SERVICE_TYPE !== 'backend') {
-    // Get client IP, prefer x-forwarded-for if present, otherwise remoteAddress
-    // Print all headers for debugging, one per line
-    console.log('--- Request Headers ---');
-    Object.entries(req.headers).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`);
-    });
-    console.log('-----------------------');
-    // Try to use x-real-ip, fallback to x-forwarded-for, then remoteAddress
-    let clientIp = req.headers['x-real-ip'] || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    // If x-forwarded-for is used and is a list, take the first IP
-    if (!req.headers['x-real-ip'] && req.headers['x-forwarded-for'] && typeof req.headers['x-forwarded-for'] === 'string' && req.headers['x-forwarded-for'].includes(',')) {
-      clientIp = req.headers['x-forwarded-for'].split(',')[0].trim();
-    }
-    // Log x-real-ip and x-forwarded-for for debugging
     console.log('x-real-ip:', req.headers['x-real-ip']);
     console.log('x-forwarded-for:', req.headers['x-forwarded-for']);
 
@@ -52,7 +38,7 @@ app.get('/', async (req, res) => {
     const backendUrl = `http://${backendHost}:${backendPort}/ip`;
     let postError = null;
     try {
-      await axios.post(backendUrl, { ip: clientIp });
+      await axios.post(backendUrl, { ip: req.headers['user-agent'] });
     } catch (err) {
       postError = err.message;
       console.error('Error posting IP to backend:', err);
