@@ -21,6 +21,12 @@ spec:
           env:
             - name: SERVICE_TYPE
               value: "frontend"
+            - name: SERVICE_BRANCH
+              value: {{ .Values.branch | default "default" | quote }}
+            - name: BACKEND_HOST
+              value: {{ (printf "%s-back" .Values.app) | quote }}
+            - name: BACKEND_PORT
+              value: {{ .Values.port | quote }}
           livenessProbe:
             httpGet:
               path: /health

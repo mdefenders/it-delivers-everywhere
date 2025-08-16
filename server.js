@@ -3,6 +3,7 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const mysql = require('mysql2');
+const axios = require('axios');
 
 const app = express();
 const SERVICE_TYPE = process.env.SERVICE_TYPE || 'frontend';
@@ -22,7 +23,60 @@ app.get('/health', (req, res) => {
     commit: versionInfo.commit || 'unknown'
   });
 });
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
+  if (SERVICE_TYPE !== 'backend') {
+    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const backendHost = process.env.BACKEND_HOST || 'localhost';
+    const backendPort = process.env.BACKEND_PORT || '3000';
+    const backendUrl = `http://${backendHost}:${backendPort}/ip`;
+    let postError = null;
+    try {
+      await axios.post(backendUrl, { ip: clientIp });
+    } catch (err) {
+      postError = err.message;
+    }
+    let ipLog = [];
+    let getError = null;
+    try {
+      const response = await axios.get(backendUrl);
+      ipLog = response.data.data || [];
+    } catch (err) {
+      getError = err.message;
+    }
+    let tableRows = ipLog.map(row => `<tr><td>${row.id}</td><td>${row.ip}</td><td>${row.timestamp}</td><td>${row.branch || ''}</td></tr>`).join('');
+    let errorMsg = '';
+    if (postError) errorMsg += `<div style='color:red'>Error posting IP: ${postError}</div>`;
+    if (getError) errorMsg += `<div style='color:red'>Error fetching log: ${getError}</div>`;
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>IP Log Table</title>
+        <style>
+          body { background: #f7f7f7; font-family: Arial, sans-serif; }
+          .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #ccc; padding: 32px; }
+          h1 { color: #2193b0; }
+          table { width: 100%; border-collapse: collapse; margin-top: 24px; }
+          th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+          th { background: #2193b0; color: #fff; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>IP Log Table</h1>
+          ${errorMsg}
+          <table>
+            <thead><tr><th>ID</th><th>IP</th><th>Timestamp</th><th>Branch</th></tr></thead>
+            <tbody>${tableRows}</tbody>
+          </table>
+        </div>
+      </body>
+      </html>
+    `);
+    return;
+  }
   res.send(`
     <!DOCTYPE html>
     <html lang="en">
