@@ -61,6 +61,8 @@ spec:
               value: {{ .Values.mysqlUser | default "admin" | quote }}
             - name: SERVICE_TYPE
               value: "backend"
+            - name: SERVICE_BRANCH
+              value: {{ .Values.branch | default "default" | quote }}
             - name: MYSQL_PASSWORD_FILE
               value: {{ .Values.secretPath }}/{{ .Values.secretName }}
           livenessProbe:
