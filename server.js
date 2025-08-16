@@ -93,7 +93,7 @@ if (SERVICE_TYPE === 'backend') {
   // Ensure database and table exist
   const dbName = process.env.MYSQL_DB || 'demo';
   const branchCol = 'branch VARCHAR(128)';
-  const createDbSql = `CREATE DATABASE IF NOT EXISTS \\`${dbName}\\``;
+  const createDbSql = `CREATE DATABASE IF NOT EXISTS \`${dbName}\`;`;
   const createTableSql = `CREATE TABLE IF NOT EXISTS ip_log (id INT AUTO_INCREMENT PRIMARY KEY, ip VARCHAR(45) NOT NULL, timestamp DATETIME NOT NULL, ${branchCol})`;
 
   // Create DB if not exists
