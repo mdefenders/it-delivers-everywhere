@@ -186,7 +186,8 @@ if (SERVICE_TYPE === 'backend') {
 app.get('/ip', async (req, res) => {
   if (SERVICE_TYPE === 'backend') {
     try {
-      db.query('SELECT * FROM ip_log ORDER BY id DESC', (err, results) => {
+      const limit = parseInt(process.env.LIMIT, 10) || 20;
+      db.query(`SELECT * FROM ip_log ORDER BY id DESC LIMIT ?`, [limit], (err, results) => {
         if (err) {
           return res.status(500).json({ error: 'DB error', details: err.message });
         }
