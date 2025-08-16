@@ -4,4 +4,5 @@ httpRouteEnabled: false
 ingressEnabled: true
 mysqlHost: '10.0.1.234'
 vaultOCID: 'ocid1.vault.oc1.il-jerusalem-1.hzukagbwaahzk.abwxiljrf63vqm3panu2s2af7q462rssus2myljafx7qwdstzxigxhvtc2fq'
-secretOCID: 'ocid1.vaultsecret.oc1.il-jerusalem-1.amaaaaaa6kw4kpqaxzgqk4s5obj6ggchr6zxfdjf24fc4uz7bzcnmmeqgska'
+secretName: 'db-password'
+secretPath: '/mnt/secrets'
