@@ -23,10 +23,8 @@ spec:
               value: "frontend"
             - name: SERVICE_BRANCH
               value: {{ .Values.branch | default "default" | quote }}
-            - name: BACKEND_HOST
-              value: {{ (printf "%s-back" .Values.app) | quote }}
-            - name: BACKEND_PORT
-              value: {{ .Values.port | quote }}
+            - name: SERVICE_NAME
+              value: {{ (printf "%s_BACK" .Values.app | upper) | quote }}
           livenessProbe:
             httpGet:
               path: /health

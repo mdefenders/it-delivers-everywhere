@@ -26,8 +26,13 @@ app.get('/health', (req, res) => {
 app.get('/', async (req, res) => {
   if (SERVICE_TYPE !== 'backend') {
     const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-    const backendHost = process.env.BACKEND_HOST || 'localhost';
-    const backendPort = process.env.BACKEND_PORT || '3000';
+    // Use Kubernetes provided env vars for service DNS and port
+    const serviceName = process.env.SERVICE_NAME;
+    // Kubernetes exposes services via <SERVICE_NAME>_SERVICE_HOST and <SERVICE_NAME>_SERVICE_PORT
+    const envHostVar = `${serviceName}_SERVICE_HOST`;
+    const envPortVar = `${serviceName}_SERVICE_PORT`;
+    const backendHost = process.env[envHostVar];
+    const backendPort = process.env[envPortVar];
     const backendUrl = `http://${backendHost}:${backendPort}/ip`;
     let postError = null;
     try {
