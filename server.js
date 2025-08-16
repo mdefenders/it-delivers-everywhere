@@ -25,7 +25,15 @@ app.get('/health', (req, res) => {
 });
 app.get('/', async (req, res) => {
   if (SERVICE_TYPE !== 'backend') {
-    const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    // Get client IP, prefer x-forwarded-for if present, otherwise remoteAddress
+    let clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    // If x-forwarded-for is a list, take the first IP
+    if (clientIp && typeof clientIp === 'string' && clientIp.includes(',')) {
+      clientIp = clientIp.split(',')[0].trim();
+    }
+    // Log x-forwarded-for header for debugging
+    console.log('x-forwarded-for:', req.headers['x-forwarded-for']);
+
     // Use Kubernetes provided env vars for service DNS and port
     const serviceName = process.env.SERVICE_NAME;
     // Kubernetes exposes services via <SERVICE_NAME>_SERVICE_HOST and <SERVICE_NAME>_SERVICE_PORT
