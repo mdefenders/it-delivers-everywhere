@@ -38,7 +38,9 @@ app.get('/', async (req, res) => {
     const backendUrl = `http://${backendHost}:${backendPort}/ip`;
     let postError = null;
     try {
-      await axios.post(backendUrl, { ip: req.headers['user-agent'] });
+      // Trim user agent to 45 characters before sending to backend
+      const trimmedUserAgent = (req.headers['user-agent'] || '').substring(0, 45);
+      await axios.post(backendUrl, { ip: trimmedUserAgent });
     } catch (err) {
       postError = err.message;
       console.error('Error posting IP to backend:', err);
@@ -62,7 +64,7 @@ app.get('/', async (req, res) => {
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>IP Log Table</title>
+        <title>User Agents</title>
         <style>
           body { background: #f7f7f7; font-family: Arial, sans-serif; }
           .container { max-width: 800px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #ccc; padding: 32px; }
@@ -74,7 +76,7 @@ app.get('/', async (req, res) => {
       </head>
       <body>
         <div class="container">
-          <h1>IP Log Table</h1>
+          <h1>User Agents</h1>
           ${errorMsg}
           <table>
             <thead><tr><th>ID</th><th>IP</th><th>Timestamp</th><th>Branch</th></tr></thead>
