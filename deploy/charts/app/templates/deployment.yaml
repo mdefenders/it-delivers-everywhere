@@ -80,7 +80,7 @@ spec:
       volumes:
         - name: secrets-store-inline
           csi:
-            driver: secrets-store.csi.oraclecloud.com
+            driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
               secretProviderClass: oci-vault-db-password
