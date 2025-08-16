@@ -1,32 +1,86 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.app }}
+  name: { { .Values.app } }
 spec:
-  replicas: {{ .Values.replicas }}
+  replicas: { { .Values.replicas } }
   selector:
     matchLabels:
-      app: {{ .Values.app }}
+      app: { { .Values.app } }
   template:
     metadata:
       labels:
-        app: {{ .Values.app }}
-        tag: {{ .Values.tag }}
+        app: { { .Values.app } }
+        tag: { { .Values.tag } }
     spec:
       containers:
-        - name: {{ .Values.app }}
+        - name: { { .Values.app } }
           image: '{{ .Values.image }}:{{ .Values.tag }}'
           ports:
-            - containerPort: {{ .Values.port }}
+            - containerPort: { { .Values.port } }
+          env:
+            - name: SERVICE_TYPE
+              value: "frontend"
           livenessProbe:
             httpGet:
               path: /health
-              port: {{ .Values.port }}
+              port: { { .Values.port } }
             initialDelaySeconds: 5
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /health
-              port: {{ .Values.port }}
+              port: { { .Values.port } }
             initialDelaySeconds: 5
             periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: { { .Values.app } }-back
+spec:
+  replicas: { { .Values.replicas } }
+  selector:
+    matchLabels:
+      app: { { .Values.app } }-back
+  template:
+    metadata:
+      labels:
+        app: { { .Values.app } }-back
+        tag: { { .Values.tag } }
+    spec:
+      containers:
+        - name: { { .Values.app } }
+          image: '{{ .Values.image }}:{{ .Values.tag }}'
+          ports:
+            - containerPort: { { .Values.port } }
+          env:
+            - name: MYSQL_HOST
+              value: { { .Values.mysqlHost | quote } }
+            - name: MYSQL_USER
+              value: { { .Values.mysqlUser | default "admin" | quote } }
+            - name: SERVICE_TYPE
+              value: "backend"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: { { .Values.port } }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: { { .Values.port } }
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets"
+              readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.oraclecloud.com
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: oci-vault-db-password

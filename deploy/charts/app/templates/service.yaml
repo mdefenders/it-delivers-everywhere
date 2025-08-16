@@ -13,3 +13,18 @@ spec:
       port: {{ .Values.servicePort | default 80 }}
       targetPort: {{ .Values.port }}
 
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.app }}-back
+  labels:
+    app: {{ .Values.app }}-back
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Values.app }}-back
+  ports:
+    - protocol: TCP
+      port: {{ .Values.servicePort | default 80 }}
+      targetPort: {{ .Values.port }}
