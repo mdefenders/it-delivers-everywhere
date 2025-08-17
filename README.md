@@ -4,7 +4,7 @@ The CI/CD has been developed with the goal of making your work easier and more p
 Feel free to reach out to the team and share your ideas for improvements.
 
 This is v2 release candidate, created as an improved and simplified version of
-[Some testing assigment](https://github.com/mdefenders/it-delivers-everywhere/)
+[Some testing assigment](https://github.com/mdefenders/it-works-on-my-machine/)
 
 **Key changes include:**
 
@@ -54,8 +54,9 @@ the `main` branch.
 > - The repository is tagged with this version, confirming successful end-to-end testing in staging
 > - The corresponding Docker image is available in **DockerHub**
 > - After deployment, **smoke tests** validate that the service is running and responsive.  
-> If the smoke tests fail, the deployment is automatically rolled back by restoring the previous image tag in the GitOps
-> manifest.
+    > If the smoke tests fail, the deployment is automatically rolled back by restoring the previous image tag in the
+    GitOps
+    > manifest.
 
 ## Add Tests
 
@@ -142,7 +143,6 @@ However, the current design allows for their implementation in the future if nee
 
 - **Blue/Green or Canary deployments.**  
   Standard Kubernetes rollout strategies are sufficient for this service's reliability needs.
-- **Kubernetes infrastructure provisioning as IaaC.**
 - **Cross-service integration** in end-to-end tests during release deployments.
 - **Automated onboarding of new services.**
 - **Promotion flow automation.**
@@ -171,6 +171,9 @@ However, the current design allows for their implementation in the future if nee
 
 ### Deployment Platform
 
+The [Infrastructure as Code (IaC) for GCP GKE](https://github.com/mdefenders/iac) (so far) project is now available as a
+Terraform-based solution.
+
 The service is deployed as a **Kubernetes Deployment**, leveraging Kubernetes' native capabilities for scalability,
 reliability, and observability.
 
@@ -181,9 +184,7 @@ reliability, and observability.
 Although the Helm chart, ArgoCD ApplicationSets and Applications are included in this repository for demonstration
 purposes, in production we recommend using a centralized Helm chart registry to ensure consistency and reusability.
 
-> The included Helm chart is intentionally minimal and serves to demonstrate CD-related functionality only.  
-> It creates a Kubernetes Deployment with liveness/readiness probes, but omits Ingress and Service resources, which are
-> not required for this demo.
+> The included Helm chart is intentionally minimal and serves to demonstrate CD-related functionality only.
 
 ### CI/CD & Promotion Flow
 
@@ -561,10 +562,8 @@ offering a solid foundation for building robust and automated delivery pipelines
 ## After-party Backlog
 
 - [X] Create Grafana dashboards for monitoring and alerting
-- [ ] Add a skip ci/cd commit message.
-- [ ] Remove feature/* name convention.
 - [ ] Replace Bash scripts in the pipeline with custom or community-supported GitHub Actions for better maintainability
-- [ ] Integrate the K8S service into the Helm chart to simplify local testing and deployment
+- [X] Integrate the K8S service into the Helm chart to simplify local testing and deployment
 - [ ] Replace hardcoded values with GitHub Actions variables for improved flexibility
 - [ ] Enable branch protection rules on key branches and configure GitHub Actions with the necessary permissions to push
   to protected branches
