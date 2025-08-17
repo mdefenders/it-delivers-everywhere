@@ -1,4 +1,4 @@
 image: mdefenders/it-delivers-everywhere
 tag: action-test-ac8540a
 app: it-delivers-everywhere
-replicas: 3
+replicas: 1
