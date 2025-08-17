@@ -18,6 +18,13 @@ spec:
           image: '{{ .Values.image }}:{{ .Values.tag }}'
           ports:
             - containerPort: {{ .Values.port }}
+          env:
+            - name: SERVICE_TYPE
+              value: "frontend"
+            - name: SERVICE_BRANCH
+              value: {{ .Values.branch | default "default" | quote }}
+            - name: SERVICE_NAME
+              value: {{ .Values.app | replace "-" "_" | upper }}_BACK
           livenessProbe:
             httpGet:
               path: /health
@@ -30,3 +37,58 @@ spec:
               port: {{ .Values.port }}
             initialDelaySeconds: 5
             periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app }}-back
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.app }}-back
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app }}-back
+        tag: {{ .Values.tag }}
+    spec:
+      containers:
+        - name: {{ .Values.app }}
+          image: '{{ .Values.image }}:{{ .Values.tag }}'
+          ports:
+            - containerPort: {{ .Values.port }}
+          env:
+            - name: MYSQL_HOST
+              value: {{ .Values.mysqlHost | quote }}
+            - name: MYSQL_USER
+              value: {{ .Values.mysqlUser | default "admin" | quote }}
+            - name: SERVICE_TYPE
+              value: "backend"
+            - name: SERVICE_BRANCH
+              value: {{ .Values.branch | default "default" | quote }}
+            - name: MYSQL_PASSWORD_FILE
+              value: {{ .Values.secretPath }}/{{ .Values.secretName }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: {{ .Values.secretPath }}
+              readOnly: true
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: oci-vault-db-password
