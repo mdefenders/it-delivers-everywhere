@@ -1,4 +1,4 @@
 image: mdefenders/it-delivers-everywhere
-tag: action-test-pr-31
+tag: feature-action-test-5d40d6a
 app: it-delivers-everywhere
 replicas: 1
