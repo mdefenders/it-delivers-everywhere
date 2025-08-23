@@ -19,5 +19,7 @@ concurrency:
 jobs:
   call-ci:
     name: Staging-CI Workflow
-    uses: mdefenders/shared-workflows/.github/workflows/staging-ci.yaml@dev
+    uses: mdefenders/shared-workflows/.github/workflows/dev-ci.yaml@dev
+    with:
+      deploy-to-environment: 'staging'
     secrets: inherit
