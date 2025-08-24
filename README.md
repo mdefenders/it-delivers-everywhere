@@ -1,10 +1,10 @@
+> This is the second generation of a demo project, created to showcase my skills and experience in DevOps, CI/CD, and
+> Cloud-Native technologies, while also serving as a solid starting point for essential real-world projects
+
 # Brief Developer Onboarding Guide
 
 The CI/CD has been developed with the goal of making your work easier and more productive.  
 Feel free to reach out to the team and share your ideas for improvements.
-
-This is v2 release candidate, created as an improved and simplified version of
-[Some testing assigment](https://github.com/mdefenders/it-works-on-my-machine/)
 
 **Key changes include:**
 
@@ -237,7 +237,6 @@ The CD flow relies on GitOps principles:
 > checks.
 
 ## Repository & Branching Strategy
-
 
 ### Branching Model
 
@@ -524,6 +523,12 @@ offering a solid foundation for building robust and automated delivery pipelines
 
 ## After-party Backlog
 
+- [ ] AWS EKS support for IaC
+- [ ] SSL/TLS termination for IaC
+- [ ] API Gateway and KEDA integration for IaC
+- [ ] Resources requests and limits in the Helm chart
+- [ ] Replace placeholders for pos-deployment checks with real Kubernetes API calls
+- [ ] Replace placeholder for automated rollbacks
 - [X] Create Grafana dashboards for monitoring and alerting
 - [X] Replace Bash scripts in the pipeline with custom or community-supported GitHub Actions for better maintainability
 - [X] Integrate the K8S service into the Helm chart to simplify local testing and deployment
