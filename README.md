@@ -94,10 +94,11 @@ The report includes:
 
 ![img.png](doc/images/img.png)
 ![img.png](doc/images/img2.png)
+![img.png](doc/images/img3.png)
 
 ## Notifications
 
-![img.png](doc/images/img3.png)
+![img.png](doc/images/img4.png)
 
 > The most critical notification is that the service has passed tests and was successfully deployed to the target
 > environment — this is already implemented wit Slack.
@@ -124,7 +125,7 @@ Only essential metrics are collected to provide quick insights into:
 To drill down into specific runs, simply click on the corresponding link in the dashboard — it will take you directly to
 the detailed GitHub Actions workflow execution.
 
-![img.png](doc/images/img4.png)
+![img.png](doc/images/img5.png)
 
 # TL;DR
 
@@ -148,24 +149,8 @@ However, the current design allows for their implementation in the future if nee
 - **Promotion flow automation.**
 - **Pinning reusable workflows** to tagged versions (`@vX`) instead of using the `dev` reference.
 - **Job failures** Security vulnerabilities haven't been fixed to demonstrate job reporting and failures handling.
-- **on_create** triggers intentionally not implemented because of the service behavior.
-
-> In a real word scenario, a wrapper action may be created to route on create calls proper way.
-
-- **Reusable workflows** with embedded Bash scripts were used for logic isolation and reuse due to:
-
-    - The lack of suitable, trustworthy community GitHub Actions that fit the required use cases
-    - The overhead of creating fully-fledged custom Actions was out of scope for this testing assignment
-
-> **Real-world recommendation:** For production-grade pipelines, it's recommended to implement custom GitHub Actions
-> with proper testing suites and documentation. This helps reduce the number of jobs, improves maintainability, and
-> reserves separate jobs mainly for true parallelism or environment-specific logic.
 
 - No detailed log shipping per job was implemented.
-
-> **Real-world recommendation:** It's valuable to centralize job-level logs and error details in a monitoring system.  
-> This enables faster root cause analysis by providing visibility into which specific steps or commands caused a
-> failure.
 
 ## Architecture & Design
 
@@ -230,13 +215,6 @@ allowing only changes made through Pull Requests or by the GitHub Actions user.
 
 ### GitHub Actions (CI)
 
-Reusable workflows were created for each branch and code promotion step to ensure logical separation, code reuse, and
-make the CI/CD process easier to maintain and more reliable.
-
-Most workflow steps and components are also implemented as reusable workflows using Bash scripts, specifically for the
-testing assignment. In a real-world scenario, it is recommended to implement custom GitHub Actions with proper testing
-and packaging to improve maintainability and reduce job runs.
-
 The CI pipeline, implemented with GitHub Actions, performs the following steps:
 
 - Code quality checks: linting, unit tests, and coverage threshold enforcement
@@ -260,21 +238,6 @@ The CD flow relies on GitOps principles:
 
 ## Repository & Branching Strategy
 
-### Repository Layout
-
-This project uses a **composite repository** (monolith-per-service), which includes:
-
-- Application source code
-- Helm chart (for demo purposes — in production, use a centralized chart registry)
-- GitOps deployment manifests
-
-> **Why this structure?**  
-> A repository that combines both the service code and its GitOps configuration:
-> - Simplifies CI/CD pipelines by enabling build and deploy in a single pipeline run
-> - Avoid build queuing and merge conflicts in GitOps manifests during parallel service builds
->
-> In real-world projects, either a **pure monorepo** or **split-repo** (multi-repo) structure may be more appropriate,
-> depending on team size, service scale, and system complexity.
 
 ### Branching Model
 
@@ -562,14 +525,13 @@ offering a solid foundation for building robust and automated delivery pipelines
 ## After-party Backlog
 
 - [X] Create Grafana dashboards for monitoring and alerting
-- [ ] Replace Bash scripts in the pipeline with custom or community-supported GitHub Actions for better maintainability
+- [X] Replace Bash scripts in the pipeline with custom or community-supported GitHub Actions for better maintainability
 - [X] Integrate the K8S service into the Helm chart to simplify local testing and deployment
-- [ ] Replace hardcoded values with GitHub Actions variables for improved flexibility
+- [X] Replace hardcoded values with GitHub Actions variables for improved flexibility
 - [ ] Enable branch protection rules on key branches and configure GitHub Actions with the necessary permissions to push
   to protected branches
 - [ ] Add manual triggers for staging end-to-end test executions
 - [ ] Automate updating the service version in `package.json` during release branch creation
-- [ ] Add DependaBot PR to FeatureBranch Workflow filters
 - [X] Add cost saving undeploy on success and undeploy on failure options
 - [X] Move from GitFlow to Branch-per-release or Trunk-based development
-- [ ] Add safe name conversions from GitHub org/repo names to Docker image names nad K8S namespaces
+- [X] Add safe name conversions from GitHub org/repo names to Docker image names nad K8S namespaces
